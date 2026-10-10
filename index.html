@@ -27,18 +27,7 @@
                 <span class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600">🚨 SOS Emergency</span>
             </div>
 
-        </div>
-    </header>
-
-    <main class="max-w-4xl mx-auto px-4 py-6">
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200">
-            <h2 class="text-lg font-bold text-slate-900">Welcome to SurakshaGrid 🌙</h2>
-            <p class="text-sm text-slate-500">
-                Help every woman and girl get home safely. Solar-powered street lights
-                can make dark lanes and bus stops safer for everyone.
-            </p>
-        </div>
+        
 </div>
     </header>
 
@@ -54,6 +43,52 @@
                 girl can get home safely.
             </p>
         </div>
+        </p>
+        </div>
+
+        <div class="space-y-4">
+
+            <button id="report-button" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-3 rounded-xl text-sm">
+                📝 Community Report
+            </button>
+
+            <p id="thanks" class="hidden text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl p-3"></p>
+
+            <form id="report-form" class="hidden bg-white p-5 rounded-2xl border border-slate-200 space-y-3">
+
+                <h2 class="font-bold text-slate-900">Tell us what you noticed</h2>
+
+                <div>
+                    <label for="report-title" class="block text-xs font-semibold text-slate-700 mb-1">What did you notice?</label>
+                    <input type="text" id="report-title" required placeholder="e.g., No light on this lane after 7 pm"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
+
+                <div>
+                    <label for="report-type" class="block text-xs font-semibold text-slate-700 mb-1">What kind of report is it?</label>
+                    <select id="report-type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                        <option value="Dark Spot">🌑 Dark spot / no light here</option>
+                        <option value="Broken Light">💡 Streetlight not working</option>
+                        <option value="Unsafe">⚠️ I felt unsafe here</option>
+                        <option value="Well Lit">✅ Well-lit and safe</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="report-place" class="block text-xs font-semibold text-slate-700 mb-1">Where is it?</label>
+                    <input type="text" id="report-place" required placeholder="e.g., Near the bus stop"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm">
+                </div>
+
+                <p class="text-[11px] text-slate-500">
+                    In danger right now? Don't use this form. Use the SOS tab or call the police.
+                </p>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-xl text-sm">
+                    Send report
+                </button>
+
+            </form>
     </main>
 
 </body>
