@@ -13,9 +13,14 @@ body{margin:0;font-family:Arial,sans-serif;background:#f4f6fa;color:#222}
 .sun{background:#10b981;color:#fff;font-size:20px;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
 .logo-name{margin:0;font-size:18px;font-weight:bold;color:#0f172a}
 .logo-tagline{margin:0;font-size:12px;color:#64748b}
+
 .tabs{display:flex;gap:4px;background:#f1f5f9;padding:4px;border-radius:10px}
-.tab{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:bold;color:#475569}
-.tab-active{background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.tabs .tab{width:auto;margin-top:0;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:bold;color:#475569;background:transparent;cursor:pointer}
+.tabs .tab:hover{background:#e2e8f0}
+.tabs .tab-active,.tabs .tab-active:hover{background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+
+.tab-page{display:none}
+.tab-page.show{display:block}
 
 .page{max-width:1000px;margin:0 auto;padding:20px;display:flex;flex-wrap:wrap;gap:20px}
 .left{flex:2;min-width:300px}
@@ -34,6 +39,25 @@ button:hover{background:#3b57e0}
 .note{background:#f6f8fb;border:1px solid #e3e7ee;border-radius:10px;padding:10px;margin-bottom:10px;font-size:14px}
 .note small{color:#777}
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#e4e9fb;margin-bottom:4px}
+
+.full{flex:1 1 100%}
+.weather-row{display:flex;flex-wrap:wrap;gap:8px}
+.weather-btn{width:auto;margin-top:0;padding:10px 16px;background:#e4e9fb;color:#222;font-size:14px}
+.weather-btn:hover{background:#d3dafa}
+.weather-btn.weather-on{background:#4f6df5;color:#fff}
+.lamp-grid{display:flex;flex-wrap:wrap;gap:16px}
+.lamp-card{flex:1 1 260px;background:#fff;border:1px solid #dde2ea;border-radius:14px;padding:16px;font-size:14px}
+.lamp-card h3{margin:0 0 4px;font-size:15px}
+.lamp-card p{margin:4px 0}
+.bar{height:10px;background:#e5e7eb;border-radius:6px;overflow:hidden;margin-top:6px}
+.bar-fill{height:100%}
+
+.sos-box{max-width:500px;margin:0 auto;padding:20px}
+.sos-box .card{text-align:center}
+#sos-button{width:180px;height:180px;border-radius:50%;background:#e11d48;font-size:20px;font-weight:bold;margin:20px auto;display:block}
+#sos-button:hover{background:#be123c}
+#sos-message{display:none;background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:14px;font-size:14px;text-align:left}
+#sos-message.show{display:block}
 </style>
 </head>
 <body>
@@ -48,12 +72,13 @@ button:hover{background:#3b57e0}
 </div>
 
 <div class="tabs">
-<span class="tab tab-active">🗺️ Community Map</span>
-<span class="tab">💡 Solar Streetlamps</span>
-<span class="tab">🚨 SOS Emergency</span>
+<button class="tab tab-active" id="btn-map" onclick="showTab('map')">🗺️ Community Map</button>
+<button class="tab" id="btn-solar" onclick="showTab('solar')">💡 Solar Streetlamps</button>
+<button class="tab" id="btn-sos" onclick="showTab('sos')">🚨 SOS Emergency</button>
 </div>
 </div>
 
+<div id="tab-map" class="tab-page show">
 <div class="page">
 
 <div class="left">
@@ -95,6 +120,45 @@ button:hover{background:#3b57e0}
 </div>
 </div>
 
+</div>
+</div>
+
+<div id="tab-solar" class="tab-page">
+<div class="page">
+<div class="full">
+
+<div class="card">
+<h2>💡 Solar streetlamps</h2>
+<p>Pick the weather and watch what happens to the lamps.</p>
+<div class="weather-row">
+<button class="weather-btn weather-on" id="w-sunny" onclick="setWeather('sunny')">☀️ Sunny</button>
+<button class="weather-btn" id="w-rainy" onclick="setWeather('rainy')">🌧️ Rainy</button>
+<button class="weather-btn" id="w-night" onclick="setWeather('night')">🌙 Night</button>
+<button class="weather-btn" id="w-windy" onclick="setWeather('windy')">💨 Windy</button>
+</div>
+</div>
+
+<div id="lamp-grid" class="lamp-grid"></div>
+
+</div>
+</div>
+</div>
+
+<div id="tab-sos" class="tab-page">
+<div class="sos-box">
+<div class="card">
+<h2>🚨 Emergency SOS</h2>
+<p>Press the button if you need help.</p>
+
+<button id="sos-button" onclick="pressSOS()">TAP FOR SOS</button>
+
+<div id="sos-message">
+<p><b>SOS pressed at <span id="sos-time"></span></b></p>
+<p>This is a demo, so no real alert was sent to anyone. If you are in danger, call 112, India's emergency number.</p>
+<button onclick="resetSOS()">Reset</button>
+</div>
+</div>
+</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -156,14 +220,93 @@ for (var i = 0; i < notes.length; i++) {
   addPinToMap(notes[i])
 }
 showNotes()
+
+function showTab(name) {
+  var names = ['map', 'solar', 'sos']
+
+  for (var i = 0; i < names.length; i++) {
+    document.getElementById('tab-' + names[i]).classList.remove('show')
+    document.getElementById('btn-' + names[i]).classList.remove('tab-active')
+  }
+
+  document.getElementById('tab-' + name).classList.add('show')
+  document.getElementById('btn-' + name).classList.add('tab-active')
+
+  if (name === 'map') {
+    setTimeout(function () { map.invalidateSize() }, 100)
+  }
+}
+
+var weatherModes = {
+  sunny: { multiplier: 1.0, source: 'Solar direct ☀️', mode: 'Full solar power' },
+  rainy: { multiplier: 0.6, source: 'Stored battery 🔋', mode: 'Eco mode (dimmed)' },
+  night: { multiplier: 0.45, source: 'Stored battery 🌙', mode: 'Night lighting mode' },
+  windy: { multiplier: 0.9, source: 'Solar + wind hybrid 💨', mode: 'Hybrid boost' }
+}
+
+var currentWeather = 'sunny'
+
+var lamps = [
+  { name: 'MG Road Lamp', place: 'MG Road', base: 92 },
+  { name: 'Cubbon Park Lamp', place: 'Cubbon Park', base: 85 },
+  { name: 'Bus Stop Lamp', place: 'Near the bus stop', base: 78 },
+  { name: 'Park Gate Lamp', place: 'Community Park gate', base: 88 }
+]
+
+function showLamps() {
+  var grid = document.getElementById('lamp-grid')
+  var weather = weatherModes[currentWeather]
+  grid.innerHTML = ''
+
+  for (var i = 0; i < lamps.length; i++) {
+    var lamp = lamps[i]
+    var battery = Math.floor(lamp.base * weather.multiplier)
+
+    if (battery > 100) { battery = 100 }
+    if (battery < 20) { battery = 20 }
+
+    var color = '#10b981'
+    if (battery <= 70) { color = '#f59e0b' }
+    if (battery <= 40) { color = '#ef4444' }
+
+    var card = document.createElement('div')
+    card.className = 'lamp-card'
+    card.innerHTML =
+      '<h3>' + lamp.name + '</h3>' +
+      '<p>📍 ' + lamp.place + '</p>' +
+      '<p>Power source: <b>' + weather.source + '</b></p>' +
+      '<p>Mode: <b>' + weather.mode + '</b></p>' +
+      '<p>Battery: <b>' + battery + '%</b></p>' +
+      '<div class="bar"><div class="bar-fill" style="width:' + battery + '%;background:' + color + '"></div></div>'
+    grid.appendChild(card)
+  }
+}
+
+function setWeather(name) {
+  currentWeather = name
+
+  var names = ['sunny', 'rainy', 'night', 'windy']
+  for (var i = 0; i < names.length; i++) {
+    document.getElementById('w-' + names[i]).classList.remove('weather-on')
+  }
+  document.getElementById('w-' + name).classList.add('weather-on')
+
+  showLamps()
+}
+
+showLamps()
+
+function pressSOS() {
+  document.getElementById('sos-time').textContent = new Date().toLocaleTimeString()
+  document.getElementById('sos-message').classList.add('show')
+}
+
+function resetSOS() {
+  document.getElementById('sos-message').classList.remove('show')
+}
 </script>
 
 </body>
 </html>
-            
-            
-                    
 
-   
-            
-
+  
