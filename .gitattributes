@@ -2,56 +2,103 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SOS</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;font-family:Inter,system-ui,sans-serif;color:#1e293b;padding:16px}
-.box{width:100%;max-width:380px;background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:28px 24px;text-align:center}
+.box{width:100%;max-width:380px;background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:20px 24px 28px;text-align:center}
+.tabs{display:flex;gap:6px;background:#f1f5f9;padding:5px;border-radius:14px;margin-bottom:24px}
+.tab{flex:1;border:0;background:transparent;padding:10px;border-radius:10px;font:600 14px inherit;font-family:inherit;color:#64748b;cursor:pointer}
+.tab.on{background:#fff;color:#1e293b;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.tab .dot{display:none;width:8px;height:8px;border-radius:50%;background:#e11d48;margin-left:6px;vertical-align:middle}
+.pane{display:none}
+.pane.on{display:block}
 h2{font-size:30px;margin:0 0 8px;font-weight:800}
 p{font-size:14px;color:#64748b;margin:0 0 24px}
 #sos{width:200px;height:200px;border-radius:50%;background:#e11d48;color:#fff;border:0;display:inline-flex;align-items:center;justify-content:center;font:800 64px inherit;font-family:inherit;letter-spacing:2px;cursor:pointer;box-shadow:0 10px 24px rgba(225,29,72,.3)}
 #sos:hover{background:#be123c}
 #sos:active{transform:scale(.96)}
-#done{display:none;background:#fff1f2;border:1px solid #fecdd3;border-radius:12px;padding:14px;font-size:15px;color:#9f1239;font-weight:600}
-#done span{display:block;font-weight:400;font-size:12px;color:#be123c;margin-top:4px}
-#undo{background:none;border:0;color:#64748b;font-size:12px;text-decoration:underline;cursor:pointer;margin-top:12px}
 #help{margin-top:22px;width:100%;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:12px;padding:11px;font:600 14px inherit;font-family:inherit;color:#334155;cursor:pointer}
 #help:hover{background:#e2e8f0}
 #steps{display:none;text-align:left;font-size:13px;color:#475569;margin-top:12px;padding:12px 12px 12px 30px;background:#f8fafc;border-radius:12px;line-height:1.6}
 #steps li{margin-bottom:4px}
-
+#alert{display:none;background:#dc2626;color:#fff;border-radius:14px;padding:22px 16px;font-size:18px;font-weight:800;line-height:1.35;letter-spacing:.3px}
+#alert small{display:block;font-weight:400;font-size:12px;margin-top:8px;opacity:.9;letter-spacing:0}
+#empty{font-size:14px;color:#94a3b8;margin:30px 0}
+#undo{display:none;background:none;border:0;color:#64748b;font-size:12px;text-decoration:underline;cursor:pointer;margin-top:14px}
 </style>
-
 </head>
 <body>
 <div class="box">
+
+<div class="tabs">
+<button class="tab on" id="tab-sos">SOS</button>
+<button class="tab" id="tab-alerts">Alerts<span class="dot" id="dot"></span></button>
+</div>
+
+<div class="pane on" id="pane-sos">
 <h2>Emergency SOS</h2>
 <p>Tap the button to alert the nearest police station.</p>
 <button id="sos">SOS</button>
-<div id="done">
-Nearest police station has been informed.
-<span>Your location has been shared.</span>
-<button id="undo">Sent by mistake? Cancel</button>
+
+<button id="help">How to use</button>
+<ol id="steps">
+<li>Tap the red SOS button.</li>
+<li>You will be taken to the Alerts tab.</li>
+<li>Wait for the red confirmation message.</li>
+<li>If you tapped by mistake, press Cancel there.</li>
+</ol>
 </div>
+
+<div class="pane" id="pane-alerts">
+<h2>Alerts</h2>
+<div id="empty">No active alerts.</div>
+<div id="alert">
+BUTTON IS CLICKED - IMMEDIATE HELP SECURED
+<small id="time"></small>
 </div>
+<button id="undo">Sent by mistake? Cancel alert</button>
+</div>
+
+</div>
+
 <script>
-var sos=document.getElementById('sos')
-var done=document.getElementById('done')
+var tabs={sos:document.getElementById('tab-sos'),alerts:document.getElementById('tab-alerts')}
+var panes={sos:document.getElementById('pane-sos'),alerts:document.getElementById('pane-alerts')}
+var alertBox=document.getElementById('alert')
+var empty=document.getElementById('empty')
+var undo=document.getElementById('undo')
+var dot=document.getElementById('dot')
 var steps=document.getElementById('steps')
-sos.onclick=function(){
-  sos.style.display='none'
-  done.style.display='block'
+
+function open(name){
+  for(var k in tabs){
+    tabs[k].classList.toggle('on',k===name)
+    panes[k].classList.toggle('on',k===name)
+  }
 }
-document.getElementById('undo').onclick=function(){
-  done.style.display='none'
-  sos.style.display='inline-flex'
+tabs.sos.onclick=function(){open('sos')}
+tabs.alerts.onclick=function(){open('alerts')}
+
+document.getElementById('sos').onclick=function(){
+  alertBox.style.display='block'
+  undo.style.display='inline-block'
+  empty.style.display='none'
+  dot.style.display='inline-block'
+  document.getElementById('time').textContent='Sent at '+new Date().toLocaleTimeString()
+  open('alerts')
+}
+undo.onclick=function(){
+  alertBox.style.display='none'
+  undo.style.display='none'
+  empty.style.display='block'
+  dot.style.display='none'
+  open('sos')
 }
 document.getElementById('help').onclick=function(){
   steps.style.display=steps.style.display==='block'?'none':'block'
 }
 </script>
-
-
-
 </body>
 </html>
