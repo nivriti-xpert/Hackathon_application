@@ -88,7 +88,31 @@
                     Send report
                 </button>
 
-            </form>
+            </form> </div>
+
+        <div class="bg-white p-5 rounded-2xl border-2 border-slate-300 shadow-sm space-y-4">
+
+            <div>
+                <h3 class="font-bold text-slate-900">📋 Street Light Report</h3>
+                <p id="report-summary" class="text-sm text-black"></p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                <div class="bg-rose-50 border border-rose-200 rounded-xl p-4">
+                    <h4 class="font-semibold text-rose-900 text-sm mb-2">
+                        🌑 Dark places (<span id="dark-count">0</span>)
+                    </h4>
+                    <ul id="dark-list" class="text-sm text-black space-y-1"></ul>
+                </div>
+
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                    <h4 class="font-semibold text-emerald-900 text-sm mb-2">
+                        ✅ Properly lit places (<span id="lit-count">0</span>)
+                    </h4>
+                    <ul id="lit-list" class="text-sm text-black space-y-1"></ul>
+                </div>
+
     </main>
 
 </body>
