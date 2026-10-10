@@ -1,37 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Solar Street Lamp</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 0; background: #f0f2f5; }
-  header { background: #2c3e50; color: white; padding: 20px; text-align: center; }
-  .container { display: flex; height: calc(100vh - 60px); }
-  #map { flex: 2; height: 100%; }
-  .sidebar { flex: 1; padding: 20px; background: white; overflow-y: auto; }
-  button { padding: 15px 20px; background: #71b0d9; color: white; border: none; cursor: pointer; border-radius: 4px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Street Lamp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .weather-btn { background-color: #63a2d8; color: #fff; transition: all 0.15s; border-bottom: 1px solid rgba(255,255,255,0.35); }
+        .weather-btn:last-child { border-bottom: none; }
+        .weather-btn:hover { background-color: #4b8ec8; }
+        .weather-btn.active { background-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(0,0,0,0.25); }
+    </style>
 </head>
-<body>
-
-<header>
-  <h1>suraksha grid</h1>
-</header>
-
-<div class="container">
-  <div id="map"></div>
-  <div class="sidebar">
-    <h2>Weather & Solar Status</h2>
-    <p>Simulate Weather:</p>
-    <button>Sunny (High Solar Charge)</button>
-    <button>Cloudy (Moderate Charge)</button>
-    <button>Rainy (Low Charge)</button>
-    <button>Stormy (Battery Drain)</button>
-    
-    <div id="battery-status">
-      <!-- Dynamically populated streetlamp batteries go here -->
+<body class="bg-[#f0f3f6] text-slate-800 h-screen flex flex-col font-sans overflow-hidden">
+    <header class="bg-[#243746] text-white py-5 px-6 shrink-0 shadow-sm z-10">
+        <h1 class="text-3xl font-bold text-center">solar street lamp</h1>
+    </header>
+    <div class="flex-1 flex flex-row w-full min-h-0 items-stretch">
+        <main class="flex-1 p-6 overflow-y-auto space-y-4">
+            <div id="lamps-container" class="grid grid-cols-1 xl:grid-cols-2 gap-4"></div>
+        </main>
+        <aside class="w-72 sm:w-80 bg-white border-l border-slate-200 p-6 flex flex-col shrink-0 h-full overflow-y-auto">
+            <h2 class="text-2xl font-black text-black leading-tight">Weather &amp;<br>Solar Status</h2>
+            <p class="text-sm text-slate-800 font-medium mt-6 mb-3">
+            Simulate. Weather:
+            </p>
+            <div class="flex flex-col rounded-md overflow-hidden shadow-sm">
+            
+            
+            
+                <button type="button" id="btn-sunny" onclick="selectWeather('sunny')" class="weather-btn py-3.5 px-3 text-xs text-center leading-snug">Sunny (High Solar<br>Charge)</button>
+                <button type="button" id="btn-cloudy" onclick="selectWeather('cloudy')" class="weather-btn py-3.5 px-3 text-xs text-center leading-snug">Cloudy (Moderate<br>Charge)</button>
+                <button type="button" id="btn-rainy" onclick="selectWeather('rainy')" class="weather-btn py-3.5 px-3 text-xs text-center leading-snug">Rainy (Low<br>Charge)</button>
+                <button type="button" id="btn-stormy" onclick="selectWeather('stormy')" class="weather-btn py-3.5 px-3 text-xs text-center leading-snug">Stormy (Battery<br>Drain)</button>
+            </div>
+        </aside>
     </div>
-  </div>
-</div>
+    <script>
+        const lamps = [
+            { id: "LAMP-101", name: "Bengeluru-mysuru national highway ", loc: "Karnataka", status: "Moderate", source: "Solar + Battery Assist", mode: "Standard Adaptive (80%)", eff: "58%", battery: 82 },
+            { id: "LAMP-102", name: "NICE road", loc: "southern and western edges of Bengaluru,", status: "Moderate", source: "Solar + Grid Assist", mode: "Standard Adaptive (85%)", eff: "64%", battery: 86 }
+        ];
 
+        function selectWeather(w) {
+            ['sunny', 'cloudy', 'rainy', 'stormy'].forEach(k => {
+                document.getElementById(`btn-${k}`).classList.toggle('active', k === w);
+            });
+            document.getElementById('lamps-container').innerHTML = lamps.map(l => `
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <span class="text-[11px] font-bold text-slate-400">${l.id}</span>
+                                <h3 class="font-bold text-slate-900 text-base">${l.name}</h3>
+                                <p class="text-xs text-slate-500">📍 ${l.loc}</p>
+                            </div>
+                            <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-800">${l.status}</span>
+                        </div>
+                        <div class="mt-4 space-y-2 text-xs border-t border-slate-100 pt-3">
+                            <div class="flex justify-between"><span class="text-slate-500">Energy Source:</span><span class="font-semibold text-slate-800">${l.source}</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Power Mode:</span><span class="font-semibold text-slate-800">${l.mode}</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Panel Efficiency:</span><span class="font-bold text-slate-900">${l.eff}</span></div>
+                        </div>
+                        <div class="mt-3 space-y-1">
+                            <div class="flex justify-between text-xs"><span class="text-slate-500 font-medium">Battery Charge</span><span class="font-bold text-slate-900">${l.battery}%</span></div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div class="bg-blue-500 h-2 rounded-full" style="width: ${l.battery}%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        selectWeather('cloudy');
+    </script>
 </body>
-</html>
+</html></html>
