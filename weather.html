@@ -3,74 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar Street Lamp</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .weather-btn { background-color: #63a2d8; color: #fff; transition: all 0.15s; border-bottom: 1px solid rgba(255,255,255,0.35); }
-        .weather-btn:last-child { border-bottom: none; }
-        .weather-btn:hover { background-color: #4b8ec8; }
-        .weather-btn.active { background-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(0,0,0,0.25); }
-    </style>
-</head>
-<body class="bg-[#f0f3f6] text-slate-800 h-screen flex flex-col font-sans overflow-hidden">
-    <header class="bg-[#243746] text-white py-5 px-6 shrink-0 shadow-sm z-10">
-        <h1 class="text-3xl font-bold text-center">solar street lamp</h1>
-    </header>
-    <div class="flex-1 flex flex-row w-full min-h-0 items-stretch">
-        <main class="flex-1 p-6 overflow-y-auto space-y-4">
-            <div id="lamps-container" class="grid grid-cols-1 xl:grid-cols-2 gap-4"></div>
-        </main>
-        <aside class="w-72 sm:w-80 bg-white border-l border-slate-200 p-6 flex flex-col shrink-0 h-full overflow-y-auto">
-            <h2 class="text-2xl font-black text-black leading-tight">Weather &amp;<br>Solar Status</h2>
-            <p class="text-sm text-slate-800 font-medium mt-6 mb-3">
-            Simulate. Weather:
-            </p>
-            <div class="flex flex-col rounded-md overflow-hidden shadow-sm">
-            
-            
-            
-                <button type="button" id="btn-sunny" onclick="selectWeather('sunny')" class="weather-btn py-3.5 px-3 text-xs text-center leading-snug">Sunny (High Solar<br>Charge)</button>
-                <button type="button" id="btn-cloudy" onclick="selectWeather('cloudy')" class="weather-btn py-3.5 px-3 text-xs text-center leading-snug">Cloudy (Moderate<br>Charge)</button>
-                <button type="button" id="btn-rainy" onclick="selectWeather('rainy')" class="weather-btn py-3.5 px-3 text-xs text-center leading-snug">Rainy (Low<br>Charge)</button>
-                <button type="button" id="btn-stormy" onclick="selectWeather('stormy')" class="weather-btn py-3.5 px-3 text-xs text-center leading-snug">Stormy (Battery<br>Drain)</button>
-            </div>
-        </aside>
-    </div>
-    <script>
-        const lamps = [
-            { id: "LAMP-101", name: "Bengeluru-mysuru national highway ", loc: "Karnataka", status: "Moderate", source: "Solar + Battery Assist", mode: "Standard Adaptive (80%)", eff: "58%", battery: 82 },
-            { id: "LAMP-102", name: "NICE road", loc: "southern and western edges of Bengaluru,", status: "Moderate", source: "Solar + Grid Assist", mode: "Standard Adaptive (85%)", eff: "64%", battery: 86 }
-        ];
+    <title>SurakshaGrid</title>
 
-        function selectWeather(w) {
-            ['sunny', 'cloudy', 'rainy', 'stormy'].forEach(k => {
-                document.getElementById(`btn-${k}`).classList.toggle('active', k === w);
-            });
-            document.getElementById('lamps-container').innerHTML = lamps.map(l => `
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <span class="text-[11px] font-bold text-slate-400">${l.id}</span>
-                                <h3 class="font-bold text-slate-900 text-base">${l.name}</h3>
-                                <p class="text-xs text-slate-500">📍 ${l.loc}</p>
-                            </div>
-                            <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-800">${l.status}</span>
-                        </div>
-                        <div class="mt-4 space-y-2 text-xs border-t border-slate-100 pt-3">
-                            <div class="flex justify-between"><span class="text-slate-500">Energy Source:</span><span class="font-semibold text-slate-800">${l.source}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-500">Power Mode:</span><span class="font-semibold text-slate-800">${l.mode}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-500">Panel Efficiency:</span><span class="font-bold text-slate-900">${l.eff}</span></div>
-                        </div>
-                        <div class="mt-3 space-y-1">
-                            <div class="flex justify-between text-xs"><span class="text-slate-500 font-medium">Battery Charge</span><span class="font-bold text-slate-900">${l.battery}%</span></div>
-                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div class="bg-blue-500 h-2 rounded-full" style="width: ${l.battery}%"></div></div>
-                        </div>
-                    </div>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-white border-b border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg">☀️</div>
+                <div>
+                    <h1 class="font-bold text-slate-900">SurakshaGrid</h1>
+                    <p class="text-xs text-slate-500">Safer streets for women, powered by the sun</p>
                 </div>
-            `).join('');
-        }
-        selectWeather('cloudy');
-    </script>
+                <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neighborhood Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6fa;color:#222}
+.page{max-width:1000px;margin:0 auto;padding:20px;display:flex;flex-wrap:wrap;gap:20px}
+.left{flex:2;min-width:300px}
+.right{flex:1;min-width:260px}
+.banner{background:#4f6df5;color:#fff;border-radius:14px;padding:18px;margin-bottom:20px}
+.banner h1{margin:0 0 6px;font-size:20px}
+.banner p{margin:0;font-size:14px}
+.card{background:#fff;border:1px solid #dde2ea;border-radius:14px;padding:16px;margin-bottom:20px}
+.card h2{margin:0 0 12px;font-size:16px}
+#map{height:380px;border-radius:10px}
+label{display:block;font-size:13px;font-weight:bold;margin:10px 0 4px}
+input,select{width:100%;padding:9px;border:1px solid #ccd2dc;border-radius:8px;font-size:14px}
+button{width:100%;margin-top:14px;padding:11px;background:#4f6df5;color:#fff;border:0;border-radius:8px;font-size:15px;cursor:pointer}
+button:hover{background:#3b57e0}
+#list{max-height:240px;overflow-y:auto}
+.note{background:#f6f8fb;border:1px solid #e3e7ee;border-radius:10px;padding:10px;margin-bottom:10px;font-size:14px}
+.note small{color:#777}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#e4e9fb;margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<div class="left">
+<div class="banner">
+<h1>Welcome to our neighborhood map 🌳</h1>
+<p>See what's happening nearby, report a broken streetlamp, or share a lost pet alert.</p>
+</div>
+<div class="card">
+<h2>Neighborhood activity</h2>
+<div id="map"></div>
+</div>
+</div>
+
+<div class="right">
+<div class="card">
+<h2>Add a note</h2>
+<form id="noteForm">
+<label for="what">What happened?</label>
+<input id="what" required placeholder="e.g. Streetlamp is flickering">
+
+<label for="kind">Category</label>
+<select id="kind">
+<option>Streetlight</option>
+<option>Lost Pet</option>
+<option>Suspicious Activity</option>
+<option>General</option>
+</select>
+
+<label for="where">Where?</label>
+<input id="where" required placeholder="e.g. Near the park gate">
+
+<button type="submit">Post to map</button>
+</form>
+</div>
+
+<div class="card">
+<h2>Recent notes</h2>
+<div id="list"></div>
+</div>
+</div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var notes = [
+  { what: 'Streetlight working fine', kind: 'Streetlight', where: 'Maple Street', lat: 12.9716, lng: 77.5946, when: '10 mins ago' },
+  { what: 'Friendly dog wandering in the park', kind: 'Lost Pet', where: 'Community Park', lat: 12.9750, lng: 77.6050, when: '1 hour ago' },
+  { what: 'Car parked with lights on for hours', kind: 'Suspicious Activity', where: 'Pine Lane', lat: 12.9650, lng: 77.5850, when: '3 hours ago' }
+]
+
+var map = L.map('map').setView([12.9716, 77.5946], 14)
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map)
+
+function showNotes() {
+  var list = document.getElementById('list')
+  list.innerHTML = ''
+
+  for (var i = 0; i < notes.length; i++) {
+    var n = notes[i]
+    var div = document.createElement('div')
+    div.className = 'note'
+    div.innerHTML = '<span class="tag"></span><br><b></b><br><small></small>'
+    div.querySelector('.tag').textContent = n.kind
+    div.querySelector('b').textContent = n.what
+    div.querySelector('small').textContent = n.where + ' · ' + n.when
+    list.appendChild(div)
+  }
+}
+
+function addPinToMap(n) {
+  var text = document.createElement('div')
+  text.innerHTML = '<b></b><br><span></span>'
+  text.querySelector('b').textContent = n.what
+  text.querySelector('span').textContent = n.where
+  L.marker([n.lat, n.lng]).addTo(map).bindPopup(text)
+}
+
+document.getElementById('noteForm').addEventListener('submit', function (event) {
+  event.preventDefault()
+
+  var newNote = {
+    what: document.getElementById('what').value,
+    kind: document.getElementById('kind').value,
+    where: document.getElementById('where').value,
+    lat: 12.9716 + (Math.random() - 0.5) * 0.02,
+    lng: 77.5946 + (Math.random() - 0.5) * 0.02,
+    when: 'Just now'
+  }
+
+  notes.unshift(newNote)
+  addPinToMap(newNote)
+  showNotes()
+  this.reset()
+})
+
+for (var i = 0; i < notes.length; i++) {
+  addPinToMap(notes[i])
+}
+showNotes()
+</script>
+
 </body>
-</html></html>
+</html>
