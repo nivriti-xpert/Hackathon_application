@@ -1,120 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SurakshaGrid</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SurakshaGrid</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6fa;color:#222}
 
-    <script src="https://cdn.tailwindcss.com"></script>
+.top-bar{background:#fff;border-bottom:1px solid #dde2ea;padding:12px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:12px}
+.sun{background:#10b981;color:#fff;font-size:20px;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.logo-name{margin:0;font-size:18px;font-weight:bold;color:#0f172a}
+.logo-tagline{margin:0;font-size:12px;color:#64748b}
+.tabs{display:flex;gap:4px;background:#f1f5f9;padding:4px;border-radius:10px}
+.tab{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:bold;color:#475569}
+.tab-active{background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+
+.page{max-width:1000px;margin:0 auto;padding:20px;display:flex;flex-wrap:wrap;gap:20px}
+.left{flex:2;min-width:300px}
+.right{flex:1;min-width:260px}
+.banner{background:#4f6df5;color:#fff;border-radius:14px;padding:18px;margin-bottom:20px}
+.banner h1{margin:0 0 6px;font-size:20px}
+.banner p{margin:0;font-size:14px}
+.card{background:#fff;border:1px solid #dde2ea;border-radius:14px;padding:16px;margin-bottom:20px}
+.card h2{margin:0 0 12px;font-size:16px}
+#map{height:380px;border-radius:10px}
+label{display:block;font-size:13px;font-weight:bold;margin:10px 0 4px}
+input,select{width:100%;padding:9px;border:1px solid #ccd2dc;border-radius:8px;font-size:14px}
+button{width:100%;margin-top:14px;padding:11px;background:#4f6df5;color:#fff;border:0;border-radius:8px;font-size:15px;cursor:pointer}
+button:hover{background:#3b57e0}
+#list{max-height:240px;overflow-y:auto}
+.note{background:#f6f8fb;border:1px solid #e3e7ee;border-radius:10px;padding:10px;margin-bottom:10px;font-size:14px}
+.note small{color:#777}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#e4e9fb;margin-bottom:4px}
+</style>
 </head>
+<body>
 
-<body class="bg-slate-50 text-slate-800">
-
-    <header class="bg-white border-b border-slate-200">
-        <div class="max-w-4xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
-
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg">☀️</div>
-                <div>
-                    <h1 class="font-bold text-slate-900">SurakshaGrid</h1>
-                    <p class="text-xs text-slate-500">Safer streets for women, powered by the sun</p>
-                </div>
-            </div>
-
-            <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl">
-                <span class="px-4 py-2 rounded-lg text-xs font-semibold bg-white shadow-sm">🗺️ Community Map</span>
-                <span class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600">💡 Solar Streetlamps</span>
-                <span class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600">🚨 SOS Emergency</span>
-            </div>
-
-        
+<div class="top-bar">
+<div class="logo">
+<div class="sun">☀️</div>
+<div>
+<p class="logo-name">SurakshaGrid</p>
+<p class="logo-tagline">Safer streets for women, powered by the sun</p>
 </div>
-    </header>
+</div>
 
-    <main class="max-w-4xl mx-auto px-4 py-6">
+<div class="tabs">
+<span class="tab tab-active">🗺️ Community Map</span>
+<span class="tab">💡 Solar Streetlamps</span>
+<span class="tab">🚨 SOS Emergency</span>
+</div>
+</div>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200">
+<div class="page">
 
-            <h2 class="text-lg font-bold text-slate-900">Hi, welcome to SurakshaGrid 🌙</h2>
+<div class="left">
+<div class="banner">
+<h1>Welcome to our neighborhood map 🌳</h1>
+<p>See what's happening nearby, report a broken streetlamp, or share a lost pet alert.</p>
+</div>
+<div class="card">
+<h2>Neighborhood activity</h2>
+<div id="map"></div>
+</div>
+</div>
 
-            <p >
-                No one should feel scared walking home. SurakshaGrid uses solar-powered
-                street lights to brighten dark lanes and bus stops, so every woman and
-                girl can get home safely.
-            </p>
-        </div>
-        </p>
-        </div>
+<div class="right">
+<div class="card">
+<h2>Add a note</h2>
+<form id="noteForm">
+<label for="what">What happened?</label>
+<input id="what" required placeholder="e.g. Streetlamp is flickering">
 
-        <div class="space-y-4">
+<label for="kind">Category</label>
+<select id="kind">
+<option>Streetlight</option>
+<option>Lost Pet</option>
+<option>Suspicious Activity</option>
+<option>General</option>
+</select>
 
-            <button id="report-button" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-3 rounded-xl text-sm">
-                📝 Community Report
-            </button>
+<label for="where">Where?</label>
+<input id="where" required placeholder="e.g. Near the park gate">
 
-            <p id="thanks" class="hidden text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl p-3"></p>
+<button type="submit">Post to map</button>
+</form>
+</div>
 
-            <form id="report-form" class="hidden bg-white p-5 rounded-2xl border border-slate-200 space-y-3">
+<div class="card">
+<h2>Recent notes</h2>
+<div id="list"></div>
+</div>
+</div>
 
-                <h2 class="font-bold text-slate-900">Tell us what you noticed</h2>
+</div>
 
-                <div>
-                    <label for="report-title" class="block text-xs font-semibold text-slate-700 mb-1">What did you notice?</label>
-                    <input type="text" id="report-title" required placeholder="e.g., No light on this lane after 7 pm"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var notes = [
+  { what: 'Streetlight working fine', kind: 'Streetlight', where: 'Maple Street', lat: 12.9716, lng: 77.5946, when: '10 mins ago' },
+  { what: 'Friendly dog wandering in the park', kind: 'Lost Pet', where: 'Community Park', lat: 12.9750, lng: 77.6050, when: '1 hour ago' },
+  { what: 'Car parked with lights on for hours', kind: 'Suspicious Activity', where: 'Pine Lane', lat: 12.9650, lng: 77.5850, when: '3 hours ago' }
+]
 
-                <div>
-                    <label for="report-type" class="block text-xs font-semibold text-slate-700 mb-1">What kind of report is it?</label>
-                    <select id="report-type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                        <option value="Dark Spot">🌑 Dark spot / no light here</option>
-                        <option value="Broken Light">💡 Streetlight not working</option>
-                        <option value="Unsafe">⚠️ I felt unsafe here</option>
-                        <option value="Well Lit">✅ Well-lit and safe</option>
-                    </select>
-                </div>
+var map = L.map('map').setView([12.9716, 77.5946], 14)
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map)
 
-                <div>
-                    <label for="report-place" class="block text-xs font-semibold text-slate-700 mb-1">Where is it?</label>
-                    <input type="text" id="report-place" required placeholder="e.g., Near the bus stop"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm">
-                </div>
+function showNotes() {
+  var list = document.getElementById('list')
+  list.innerHTML = ''
 
-                <p class="text-[11px] text-slate-500">
-                    In danger right now? Don't use this form. Use the SOS tab or call the police.
-                </p>
+  for (var i = 0; i < notes.length; i++) {
+    var n = notes[i]
+    var div = document.createElement('div')
+    div.className = 'note'
+    div.innerHTML = '<span class="tag"></span><br><b></b><br><small></small>'
+    div.querySelector('.tag').textContent = n.kind
+    div.querySelector('b').textContent = n.what
+    div.querySelector('small').textContent = n.where + ' · ' + n.when
+    list.appendChild(div)
+  }
+}
 
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-xl text-sm">
-                    Send report
-                </button>
+function addPinToMap(n) {
+  var text = document.createElement('div')
+  text.innerHTML = '<b></b><br><span></span>'
+  text.querySelector('b').textContent = n.what
+  text.querySelector('span').textContent = n.where
+  L.marker([n.lat, n.lng]).addTo(map).bindPopup(text)
+}
 
-            </form> </div>
+document.getElementById('noteForm').addEventListener('submit', function (event) {
+  event.preventDefault()
 
-        <div class="bg-white p-5 rounded-2xl border-2 border-slate-300 shadow-sm space-y-4">
+  var newNote = {
+    what: document.getElementById('what').value,
+    kind: document.getElementById('kind').value,
+    where: document.getElementById('where').value,
+    lat: 12.9716 + (Math.random() - 0.5) * 0.02,
+    lng: 77.5946 + (Math.random() - 0.5) * 0.02,
+    when: 'Just now'
+  }
 
-            <div>
-                <h3 class="font-bold text-slate-900">📋 Street Light Report</h3>
-                <p id="report-summary" class="text-sm text-black"></p>
-            </div>
+  notes.unshift(newNote)
+  addPinToMap(newNote)
+  showNotes()
+  this.reset()
+})
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                <div class="bg-rose-50 border border-rose-200 rounded-xl p-4">
-                    <h4 class="font-semibold text-rose-900 text-sm mb-2">
-                        🌑 Dark places (<span id="dark-count">0</span>)
-                    </h4>
-                    <ul id="dark-list" class="text-sm text-black space-y-1"></ul>
-                </div>
-
-                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                    <h4 class="font-semibold text-emerald-900 text-sm mb-2">
-                        ✅ Properly lit places (<span id="lit-count">0</span>)
-                    </h4>
-                    <ul id="lit-list" class="text-sm text-black space-y-1"></ul>
-                </div>
-
-    </main>
+for (var i = 0; i < notes.length; i++) {
+  addPinToMap(notes[i])
+}
+showNotes()
+</script>
 
 </body>
 </html>
+            
+            
+                    
+
+   
+            
 
