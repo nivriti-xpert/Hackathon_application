@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Solar Street Lamp</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; background: #f0f2f5; }
+  header { background: #2c3e50; color: white; padding: 20px; text-align: center; }
+  .container { display: flex; height: calc(100vh - 60px); }
+  #map { flex: 2; height: 100%; }
+  .sidebar { flex: 1; padding: 20px; background: white; overflow-y: auto; }
+  button { padding: 15px 20px; background: #71b0d9; color: white; border: none; cursor: pointer; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>suraksha grid</h1>
+</header>
+
+<div class="container">
+  <div id="map"></div>
+  <div class="sidebar">
+    <h2>Weather & Solar Status</h2>
+    <p>Simulate Weather:</p>
+    <button>Sunny (High Solar Charge)</button>
+    <button>Cloudy (Moderate Charge)</button>
+    <button>Rainy (Low Charge)</button>
+    <button>Stormy (Battery Drain)</button>
+    
+    <div id="battery-status">
+      <!-- Dynamically populated streetlamp batteries go here -->
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
