@@ -3,153 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SurakshaGrid</title>
-
+    <title>Solar Street Lamp</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .weather-btn {
+            background-color: #63a2d8;
+            color: #ffffff;
+            transition: all 0.15s ease-in-out;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+        }
+        .weather-btn:last-child {
+            border-bottom: none;
+        }
+        .weather-btn:hover {
+            background-color: #4b8ec8;
+        }
+        .weather-btn.active {
+            background-color: #3b82f6;
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+        }
+    </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-[#f0f3f6] text-slate-800 h-screen flex flex-col font-sans overflow-hidden">
 
-    <header class="bg-white border-b border-slate-200">
-        <div class="max-w-4xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <!-- Top Blue Header -->
+    <header class="bg-[#243746] text-white py-5 px-6 shrink-0 shadow-sm z-10">
+        <h1 class="text-3xl font-bold tracking-normal text-center">solar street lamp</h1>
+    </header>
 
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg">☀️</div>
-                <div>
-                    <h1 class="font-bold text-slate-900">SurakshaGrid</h1>
-                    <p class="text-xs text-slate-500">Safer streets for women, powered by the sun</p>
-                </div>
-                <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Neighborhood Map</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<style>
-body{margin:0;font-family:Arial,sans-serif;background:#f4f6fa;color:#222}
-.page{max-width:1000px;margin:0 auto;padding:20px;display:flex;flex-wrap:wrap;gap:20px}
-.left{flex:2;min-width:300px}
-.right{flex:1;min-width:260px}
-.banner{background:#4f6df5;color:#fff;border-radius:14px;padding:18px;margin-bottom:20px}
-.banner h1{margin:0 0 6px;font-size:20px}
-.banner p{margin:0;font-size:14px}
-.card{background:#fff;border:1px solid #dde2ea;border-radius:14px;padding:16px;margin-bottom:20px}
-.card h2{margin:0 0 12px;font-size:16px}
-#map{height:380px;border-radius:10px}
-label{display:block;font-size:13px;font-weight:bold;margin:10px 0 4px}
-input,select{width:100%;padding:9px;border:1px solid #ccd2dc;border-radius:8px;font-size:14px}
-button{width:100%;margin-top:14px;padding:11px;background:#4f6df5;color:#fff;border:0;border-radius:8px;font-size:15px;cursor:pointer}
-button:hover{background:#3b57e0}
-#list{max-height:240px;overflow-y:auto}
-.note{background:#f6f8fb;border:1px solid #e3e7ee;border-radius:10px;padding:10px;margin-bottom:10px;font-size:14px}
-.note small{color:#777}
-.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#e4e9fb;margin-bottom:4px}
-</style>
-</head>
-<body>
+    <!-- Full-Height Two-Column Split (Both panes stay equal in length) -->
+    <div class="flex-1 flex flex-row w-full min-h-0 items-stretch">
+        
+        <!-- LEFT AREA: Scrollable lamp feed, matching the right pane's height -->
+        <main class="flex-1 p-6 overflow-y-auto space-y-4">
+            <div id="safety-alert-banner" class="hidden rounded-xl p-4 transition-all"></div>
+            <div id="lamps-container" class="grid grid-cols-1 xl:grid-cols-2 gap-4"></div>
+        </main>
 
-<div class="page">
+        <!-- RIGHT PANE: Equal length, full-height flush column -->
+        <aside class="w-72 sm:w-80 bg-white border-l border-slate-200 p-6 flex flex-col shrink-0 h-full overflow-y-auto">
+            <h2 class="text-2xl font-black text-black leading-tight tracking-tight">
+                Weather &amp;<br>Solar Status
+            </h2>
+            
+            <p class="text-sm text-slate-800 font-medium mt-6 mb-3">
+                Simulate Weather:
+            </p>
 
-<div class="left">
-<div class="banner">
-<h1>Welcome to our neighborhood map 🌳</h1>
-<p>See what's happening nearby, report a broken streetlamp, or share a lost pet alert.</p>
-</div>
-<div class="card">
-<h2>Neighborhood activity</h2>
-<div id="map"></div>
-</div>
-</div>
+            <!-- Weather Tabs Block -->
+            <div class="flex flex-col rounded-md overflow-hidden shadow-sm">
+                <button type="button" id="btn-sunny" class="weather-btn active py-3.5 px-3 text-xs sm:text-[13px] text-center leading-snug">
+                    Sunny (High Solar<br>Charge)
+                </button>
 
-<div class="right">
-<div class="card">
-<h2>Add a note</h2>
-<form id="noteForm">
-<label for="what">What happened?</label>
-<input id="what" required placeholder="e.g. Streetlamp is flickering">
+                <button type="button" id="btn-cloudy" class="weather-btn py-3.5 px-3 text-xs sm:text-[13px] text-center leading-snug">
+                    Cloudy (Moderate<br>Charge)
+                </button>
 
-<label for="kind">Category</label>
-<select id="kind">
-<option>Streetlight</option>
-<option>Lost Pet</option>
-<option>Suspicious Activity</option>
-<option>General</option>
-</select>
+                <button type="button" id="btn-rainy" class="weather-btn py-3.5 px-3 text-xs sm:text-[13px] text-center leading-snug">
+                    Rainy (Low<br>Charge)
+                </button>
 
-<label for="where">Where?</label>
-<input id="where" required placeholder="e.g. Near the park gate">
+                <button type="button" id="btn-stormy" class="weather-btn py-3.5 px-3 text-xs sm:text-[13px] text-center leading-snug">
+                    Stormy (Battery<br>Drain)
+                </button>
+            </div>
+        </aside>
 
-<button type="submit">Post to map</button>
-</form>
-</div>
+    </div>
 
-<div class="card">
-<h2>Recent notes</h2>
-<div id="list"></div>
-</div>
-</div>
+    <script>
+        const streetLamps = [
+            {
+                id: "LAMP-101",
+                name: "Maple Street Post #1",
+                location: "5th Avenue Corner",
+                features: {
+                    sunny: { status: "Optimal", source: "Solar Direct ☀️", powerMode: "Full Solar Power", panelEfficiency: "92%", batteryCharge: 99, isUnsafe: false },
+                    cloudy: { status: "Moderate", source: "Solar + Battery Assist", powerMode: "Standard Adaptive (80%)", panelEfficiency: "58%", batteryCharge: 82, isUnsafe: false },
+                    rainy: { status: "Caution", source: "Internal Battery Storage", powerMode: "Reduced Anti-Glare Mode (55%)", panelEfficiency: "22%", batteryCharge: 52, isUnsafe: true, warningNote: "⚠️ Slippery pedestrian corridor and poor low-beam penetration. Unsafe to travel in the night." },
+                    stormy: { status: "Hazard", source: "Emergency Battery Reserve", powerMode: "Critical Beacon Flash (30%)", panelEfficiency: "7%", batteryCharge: 28, isUnsafe: true, warningNote: "🚨 Severe waterlogging and zero standby visibility. Strictly unsafe to travel in the night." }
+                }
+            },
+            {
+                id: "LAMP-102",
+                name: "Park South Post #4",
+                location: "Main Walkway Entrance",
+                features: {
+                    sunny: { status: "Optimal", source: "Solar Direct ☀️", powerMode: "Full Solar Power", panelEfficiency: "95%", batteryCharge: 97, isUnsafe: false },
+                    cloudy: { status: "Moderate", source: "Solar + Grid Assist", powerMode: "Standard Adaptive (85%)", panelEfficiency: "64%", batteryCharge: 86, isUnsafe: false },
+                    rainy: { status: "Caution", source: "Backup Battery Cell", powerMode: "Power Conservation Mode (50%)", panelEfficiency: "18%", batteryCharge: 48, isUnsafe: true, warningNote: "⚠️ Isolated park zone with muddy pathways. Unsafe to travel in the night." },
+                    stormy: { status: "Hazard", source: "Emergency Reserve", powerMode: "Low Power Strobe Active", panelEfficiency: "5%", batteryCharge: 22, isUnsafe: true, warningNote: "🚨 Falling branches and heavy water accumulation risk. Strictly unsafe to travel in the night." }
+                }
+            },
+            {
+                id: "LAMP-103",
+                name: "East Corridor Cross #2",
+                location: "Subway Station Connector",
+                features: {
+                    sunny: { status: "Optimal", source: "Solar Direct ☀️", powerMode: "Full Solar Power", panelEfficiency: "90%", batteryCharge: 94, isUnsafe: false },
+                    cloudy: { status: "Moderate", source: "Solar Hybrid Assist", powerMode: "Energy Conserve Mode (80%)", panelEfficiency: "60%", batteryCharge: 79, isUnsafe: false },
+                    rainy: { status: "Caution", source: "Internal Storage", powerMode: "Low-Light Penetration Mode", panelEfficiency: "20%", batteryCharge: 45, isUnsafe: true, warningNote: "⚠️ Flash pooling near entry steps and weak illumination. Unsafe to travel in the night." },
+                    stormy: { status: "Hazard", source: "Critical Failsafe", powerMode: "Minimum SOS Guide Beacon", panelEfficiency: "4%", batteryCharge: 19, isUnsafe: true, warningNote: "🚨 Connector path underpass prone to flooding. Strictly unsafe to travel in the night." }
+                }
+            },
+            {
+                id: "LAMP-104",
+                name: "North Lane Post #9",
+                location: "Residential Link Road",
+                features: {
+                    sunny: { status: "Optimal", source: "Solar Direct ☀️", powerMode: "Full Solar Power", panelEfficiency: "93%", batteryCharge: 98, isUnsafe: false },
+                    cloudy: { status: "Moderate", source: "Smart Battery", powerMode: "Standard Adaptive (80%)", panelEfficiency: "57%", batteryCharge: 80, isUnsafe: false },
+                    rainy: { status: "Caution", source: "Battery Power", powerMode: "Eco Mode (60%)", panelEfficiency: "19%", batteryCharge: 49, isUnsafe: true, warningNote: "⚠️ Dark blind turns and heavy water accumulation. Unsafe to travel in the night." },
+                    stormy: { status: "Hazard", source: "Depleted Reserve", powerMode: "Emergency Beacon Mode", panelEfficiency: "6%", batteryCharge: 21, isUnsafe: true, warningNote: "🚨 Exposed overhead powerline risks and blackouts. Strictly unsafe to travel in the night." }
+                }
+            }
+        ];
 
-</div>
+        function selectWeather(weather) {
+            const weatherKeys = ['sunny', 'cloudy', 'rainy', 'stormy'];
+            weatherKeys.forEach(key => {
+                const btn = document.getElementById(`btn-${key}`);
+                if (btn) {
+                    if (key === weather) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                }
+            });
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-var notes = [
-  { what: 'Streetlight working fine', kind: 'Streetlight', where: 'Maple Street', lat: 12.9716, lng: 77.5946, when: '10 mins ago' },
-  { what: 'Friendly dog wandering in the park', kind: 'Lost Pet', where: 'Community Park', lat: 12.9750, lng: 77.6050, when: '1 hour ago' },
-  { what: 'Car parked with lights on for hours', kind: 'Suspicious Activity', where: 'Pine Lane', lat: 12.9650, lng: 77.5850, when: '3 hours ago' }
-]
+            const alertBanner = document.getElementById('safety-alert-banner');
+            if (alertBanner) {
+                if (weather === 'stormy') {
+                    alertBanner.className = "rounded-xl p-4 bg-red-600 text-white shadow-md block";
+                    alertBanner.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">🚨</span>
+                            <div>
+                                <h3 class="font-bold text-sm tracking-wide uppercase">Critical Weather Warning: Severe Storm</h3>
+                                <p class="text-xs text-red-100 mt-1">
+                                    Battery reserves are rapidly draining and visibility is minimal. 
+                                    <strong>ALL CORRIDORS ARE EXTREMELY UNSAFE TO TRAVEL IN THE NIGHT.</strong>
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                } else if (weather === 'rainy') {
+                    alertBanner.className = "rounded-xl p-4 bg-amber-100 border border-amber-300 text-amber-900 shadow-sm block";
+                    alertBanner.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">⚠️</span>
+                            <div>
+                                <h3 class="font-bold text-sm tracking-wide uppercase">Precautionary Alert: Rainy Weather</h3>
+                                <p class="text-xs text-amber-800 mt-1">
+                                    Low solar charging and heavy waterlogging detected across sectors. 
+                                    <strong>THESE PLACES ARE UNSAFE TO TRAVEL IN THE NIGHT</strong> due to compromised visibility.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    alertBanner.className = "hidden";
+                    alertBanner.innerHTML = "";
+                }
+            }
 
-var map = L.map('map').setView([12.9716, 77.5946], 14)
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map)
+            const container = document.getElementById('lamps-container');
+            if (!container) return;
+            container.innerHTML = '';
 
-function showNotes() {
-  var list = document.getElementById('list')
-  list.innerHTML = ''
+            streetLamps.forEach(lamp => {
+                const feat = lamp.features[weather];
 
-  for (var i = 0; i < notes.length; i++) {
-    var n = notes[i]
-    var div = document.createElement('div')
-    div.className = 'note'
-    div.innerHTML = '<span class="tag"></span><br><b></b><br><small></small>'
-    div.querySelector('.tag').textContent = n.kind
-    div.querySelector('b').textContent = n.what
-    div.querySelector('small').textContent = n.where + ' · ' + n.when
-    list.appendChild(div)
-  }
-}
+                let badgeClass = "bg-emerald-100 text-emerald-800";
+                let barClass = "bg-emerald-500";
+                if (feat.status === 'Moderate') {
+                    badgeClass = "bg-blue-100 text-blue-800";
+                    barClass = "bg-blue-500";
+                } else if (feat.status === 'Caution') {
+                    badgeClass = "bg-amber-100 text-amber-800";
+                    barClass = "bg-amber-500";
+                } else if (feat.status === 'Hazard') {
+                    badgeClass = "bg-red-100 text-red-800";
+                    barClass = "bg-red-500";
+                }
 
-function addPinToMap(n) {
-  var text = document.createElement('div')
-  text.innerHTML = '<b></b><br><span></span>'
-  text.querySelector('b').textContent = n.what
-  text.querySelector('span').textContent = n.where
-  L.marker([n.lat, n.lng]).addTo(map).bindPopup(text)
-}
+                const unsafeBadge = feat.isUnsafe ? `
+                    <div class="mt-3 p-3 rounded-lg ${weather === 'stormy' ? 'bg-red-50 border border-red-200 text-red-700' : 'bg-amber-50 border border-amber-200 text-amber-800'} text-xs font-semibold">
+                        ${feat.warningNote}
+                    </div>
+                ` : '';
 
-document.getElementById('noteForm').addEventListener('submit', function (event) {
-  event.preventDefault()
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between";
 
-  var newNote = {
-    what: document.getElementById('what').value,
-    kind: document.getElementById('kind').value,
-    where: document.getElementById('where').value,
-    lat: 12.9716 + (Math.random() - 0.5) * 0.02,
-    lng: 77.5946 + (Math.random() - 0.5) * 0.02,
-    when: 'Just now'
-  }
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <span class="text-[11px] font-bold text-slate-400 tracking-wider">${lamp.id}</span>
+                                <h3 class="font-bold text-slate-900 text-base leading-snug">${lamp.name}</h3>
+                                <p class="text-xs text-slate-500">📍 ${lamp.location}</p>
+                            </div>
+                            <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${badgeClass}">
+                                ${feat.status}
+                            </span>
+                        </div>
 
-  notes.unshift(newNote)
-  addPinToMap(newNote)
-  showNotes()
-  this.reset()
-})
+                        <div class="mt-4 space-y-2 text-xs border-t border-slate-100 pt-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-500">Energy Source:</span>
+                                <span class="font-semibold text-slate-800">${feat.source}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-500">Power Mode:</span>
+                                <span class="font-semibold text-slate-800">${feat.powerMode}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-500">Panel Efficiency:</span>
+                                <span class="font-bold text-slate-900">${feat.panelEfficiency}</span>
+                            </div>
+                        </div>
 
-for (var i = 0; i < notes.length; i++) {
-  addPinToMap(notes[i])
-}
-showNotes()
-</script>
+                        <div class="mt-3 space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-500 font-medium">Battery Charge</span>
+                                <span class="font-bold text-slate-900">${feat.batteryCharge}%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="${barClass} h-2 rounded-full transition-all duration-300" style="width: ${feat.batteryCharge}%"></div>
+                            </div>
+                        </div>
+                    </div>
 
+                    ${unsafeBadge}
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = {
+                'btn-sunny': 'sunny',
+                'btn-cloudy': 'cloudy',
+                'btn-rainy': 'rainy',
+                'btn-stormy': 'stormy'
+            };
+
+            Object.entries(buttons).forEach(([id, weather]) => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.addEventListener('click', () => selectWeather(weather));
+                }
+            });
+
+            selectWeather('sunny');
+        });
+    </script>
 </body>
 </html>
